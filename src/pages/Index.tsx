@@ -3,6 +3,7 @@ import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { RecentOrders } from "@/components/dashboard/RecentOrders";
 import { FuelStockWidget } from "@/components/dashboard/FuelStockWidget";
 import { EVChargingStatus } from "@/components/dashboard/EVChargingStatus";
+import { FuelManagement } from "@/components/dashboard/FuelManagement";
 
 const Index = () => {
   return (
@@ -16,6 +17,8 @@ const Index = () => {
         </div>
         
         <DashboardStats />
+        
+        <FuelManagement />
         
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="lg:col-span-2">
