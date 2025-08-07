@@ -4,6 +4,7 @@ import { RecentOrders } from "@/components/dashboard/RecentOrders";
 import { FuelStockWidget } from "@/components/dashboard/FuelStockWidget";
 import { EVChargingStatus } from "@/components/dashboard/EVChargingStatus";
 import { FuelManagement } from "@/components/dashboard/FuelManagement";
+import { PricingManagement } from "@/components/dashboard/PricingManagement";
 import { OtherActivitiesManagement } from "@/components/dashboard/OtherActivitiesManagement";
 
 const Index = () => {
@@ -20,6 +21,8 @@ const Index = () => {
         <DashboardStats />
         
         <FuelManagement />
+        
+        <PricingManagement />
         
         <OtherActivitiesManagement />
         
