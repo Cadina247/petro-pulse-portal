@@ -6,6 +6,7 @@ import { EVChargingStatus } from "@/components/dashboard/EVChargingStatus";
 import { FuelManagement } from "@/components/dashboard/FuelManagement";
 import { PricingManagement } from "@/components/dashboard/PricingManagement";
 import { OtherActivitiesManagement } from "@/components/dashboard/OtherActivitiesManagement";
+import { RedeemToken } from "@/components/dashboard/RedeemToken";
 
 const Index = () => {
   return (
@@ -25,6 +26,8 @@ const Index = () => {
         <PricingManagement />
         
         <OtherActivitiesManagement />
+        
+        <RedeemToken />
         
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="lg:col-span-2">
