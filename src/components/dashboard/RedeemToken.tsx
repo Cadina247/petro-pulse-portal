@@ -83,12 +83,15 @@ export const RedeemToken = () => {
 
     setIsRedeeming(true);
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const stationId = sessionData.session?.user.id;
       const { error } = await supabase
         .from("tokens")
         .update({
           status: "redeemed",
           redeemed_at: new Date().toISOString(),
-        })
+          ...(stationId ? { station_id: stationId } : {}),
+        } as any)
         .eq("id", tokenData.id);
 
       if (error) {
