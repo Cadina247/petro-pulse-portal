@@ -1,0 +1,97 @@
+name: Deploy Web App & Trigger Mobile Update
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy-web:
+    name: Deploy Web App (petro-pulse-portal)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run linting
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: dist/
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+
+  trigger-mobile-update:
+    name: Trigger Mobile App Update
+    runs-on: ubuntu-latest
+    needs: deploy-web
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Trigger mobile app deployment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = 'Cadina247';
+            const repo = 'fuel-forward-drive';
+            const eventType = 'web-app-updated';
+            
+            console.log(`📱 Triggering mobile app update...`);
+            console.log(`Event: ${eventType}`);
+            
+            try {
+              await github.rest.repos.createDispatchEvent({
+                owner,
+                repo,
+                event_type: eventType,
+                client_payload: {
+                  web_version: context.sha,
+                  web_ref: context.ref,
+                  timestamp: new Date().toISOString(),
+                  message: `Web app updated at ${context.sha.substring(0, 7)}`
+                }
+              });
+              console.log('✅ Mobile app update triggered successfully!');
+            } catch (error) {
+              console.error('❌ Failed to trigger mobile update:', error);
+              throw error;
+            }
+
+  notify-success:
+    name: Notify on Success
+    runs-on: ubuntu-latest
+    needs: [deploy-web, trigger-mobile-update]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Success notification
+        run: |
+          echo "✅ Web app deployed successfully!"
+          echo "📱 Mobile app update triggered!"
+          echo "🔗 Deployment will start in the mobile repository..."
