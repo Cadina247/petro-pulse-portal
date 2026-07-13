@@ -21,6 +21,8 @@ const Index = () => {
         </div>
         
         <DashboardStats />
+
+        <StationProfile />
         
         <FuelManagement />
         
