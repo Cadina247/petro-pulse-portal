@@ -36,7 +36,7 @@ export function StationProfile() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("stations")
         .select("station_name,address,phone,owner_name,latitude,longitude,logo_url")
         .eq("id", user.id)
@@ -76,7 +76,7 @@ export function StationProfile() {
       }
     }
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("stations")
       .update({
         station_name: form.station_name,

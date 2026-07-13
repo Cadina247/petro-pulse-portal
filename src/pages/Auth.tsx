@@ -105,7 +105,7 @@ export default function Auth() {
         .upload(path, logoFile, { upsert: true });
       if (!upErr) {
         const { data: pub } = supabase.storage.from("station-logos").getPublicUrl(path);
-        await supabase.from("stations").update({ logo_url: pub.publicUrl }).eq("id", userId);
+        await (supabase as any).from("stations").update({ logo_url: pub.publicUrl }).eq("id", userId);
       }
     }
 

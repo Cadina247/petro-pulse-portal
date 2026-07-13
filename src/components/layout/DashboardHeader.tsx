@@ -21,12 +21,12 @@ export function DashboardHeader() {
 
   useEffect(() => {
     if (!user) return;
-    supabase
+    (supabase as any)
       .from("stations")
       .select("station_name")
       .eq("id", user.id)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data }: any) => {
         if (data?.station_name) setStationName(data.station_name);
       });
   }, [user]);
