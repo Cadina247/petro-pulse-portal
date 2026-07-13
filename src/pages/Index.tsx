@@ -7,6 +7,7 @@ import { FuelManagement } from "@/components/dashboard/FuelManagement";
 import { PricingManagement } from "@/components/dashboard/PricingManagement";
 import { OtherActivitiesManagement } from "@/components/dashboard/OtherActivitiesManagement";
 import { RedeemToken } from "@/components/dashboard/RedeemToken";
+import { StationProfile } from "@/components/dashboard/StationProfile";
 
 const Index = () => {
   return (
