@@ -9,6 +9,8 @@ import { CreditCard, Printer, CheckCircle, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
+const db = supabase as any;
+
 interface TokenData {
   id: string;
   code: string;
@@ -36,7 +38,7 @@ export const RedeemToken = () => {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from("tokens")
         .select("*")
         .eq("code", tokenCode.trim())
@@ -52,15 +54,16 @@ export const RedeemToken = () => {
         return;
       }
 
-      setTokenData(data);
+      const token = data as TokenData;
+      setTokenData(token);
       
-      if (data.status === "redeemed") {
+      if (token.status === "redeemed") {
         toast({
           title: "Token Already Redeemed",
           description: "This token has already been used",
           variant: "destructive",
         });
-      } else if (data.status === "void") {
+      } else if (token.status === "void") {
         toast({
           title: "Token Void",
           description: "This token has been voided and cannot be used",
@@ -85,7 +88,7 @@ export const RedeemToken = () => {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const stationId = sessionData.session?.user.id;
-      const { error } = await supabase
+      const { error } = await db
         .from("tokens")
         .update({
           status: "redeemed",

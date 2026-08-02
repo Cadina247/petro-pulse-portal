@@ -2,41 +2,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Droplets } from "lucide-react";
+import { useFuelProducts } from "@/hooks/useFuelProducts";
 
-const fuelTypes = [
-  {
-    name: "Premium Petrol",
-    current: 2500,
-    capacity: 3000,
-    unit: "L",
-    status: "good",
-    price: "₦617/L",
-  },
-  {
-    name: "Diesel",
-    current: 450,
-    capacity: 2500,
-    unit: "L",
-    status: "low",
-    price: "₦750/L",
-  },
-  {
-    name: "Kerosene",
-    current: 1200,
-    capacity: 1500,
-    unit: "L",
-    status: "good",
-    price: "₦430/L",
-  },
-  {
-    name: "Cooking Gas",
-    current: 85,
-    capacity: 200,
-    unit: "KG",
-    status: "critical",
-    price: "₦1,200/KG",
-  },
-];
+const statusOf = (current: number, capacity: number) => {
+  const pct = capacity > 0 ? (current / capacity) * 100 : 0;
+  if (pct < 20) return "critical";
+  if (pct < 50) return "low";
+  return "good";
+};
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -51,20 +24,9 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const getProgressColor = (status: string) => {
-  switch (status) {
-    case "good":
-      return "bg-success";
-    case "low":
-      return "bg-warning";
-    case "critical":
-      return "bg-destructive";
-    default:
-      return "bg-primary";
-  }
-};
-
 export function FuelStockWidget() {
+  const { products, loading } = useFuelProducts();
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -75,38 +37,40 @@ export function FuelStockWidget() {
         <Badge variant="outline">Live</Badge>
       </CardHeader>
       <CardContent className="space-y-6">
-        {fuelTypes.map((fuel) => {
-          const percentage = (fuel.current / fuel.capacity) * 100;
-          
+        {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
+        {products.map((fuel) => {
+          const percentage =
+            fuel.capacity > 0 ? (fuel.quantity_available / fuel.capacity) * 100 : 0;
+          const status = statusOf(fuel.quantity_available, fuel.capacity);
+
           return (
-            <div key={fuel.name} className="space-y-2">
+            <div key={fuel.id} className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">{fuel.name}</span>
-                  {fuel.status === "critical" && (
+                  <span className="font-medium">{fuel.product_name}</span>
+                  {status === "critical" && (
                     <AlertTriangle className="w-4 h-4 text-destructive" />
                   )}
                 </div>
-                <span className="text-sm text-muted-foreground">{fuel.price}</span>
+                <span className="text-sm text-muted-foreground">
+                  ₦{Number(fuel.price).toLocaleString()}/{fuel.unit}
+                </span>
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className={getStatusColor(fuel.status)}>
-                    {fuel.current} {fuel.unit}
+                  <span className={getStatusColor(status)}>
+                    {fuel.quantity_available} {fuel.unit}
                   </span>
                   <span className="text-muted-foreground">
                     {fuel.capacity} {fuel.unit}
                   </span>
                 </div>
-                <Progress 
-                  value={percentage} 
-                  className="h-2"
-                />
+                <Progress value={percentage} className="h-2" />
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>{percentage.toFixed(1)}% capacity</span>
-                  <span className={`font-medium ${getStatusColor(fuel.status)}`}>
-                    {fuel.status.toUpperCase()}
+                  <span className={`font-medium ${getStatusColor(status)}`}>
+                    {fuel.is_available ? status.toUpperCase() : "UNAVAILABLE"}
                   </span>
                 </div>
               </div>
