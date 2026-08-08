@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Droplets, Fuel, Flame, AlertTriangle, Loader2 } from "lucide-react";
+import { Droplets, Fuel, Flame, AlertTriangle, Loader2, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useFuelProducts } from "@/hooks/useFuelProducts";
 
@@ -16,8 +17,48 @@ const iconFor = (name: string) => {
 };
 
 export function FuelManagement() {
-  const { products, loading, saving, patchLocal, updateProduct, saveAll } = useFuelProducts();
+  const { products, loading, saving, patchLocal, updateProduct, addProduct, deleteProduct, saveAll } =
+    useFuelProducts();
   const { toast } = useToast();
+  const [newName, setNewName] = useState("");
+  const [newUnit, setNewUnit] = useState("L");
+  const [newPrice, setNewPrice] = useState("");
+  const [newCapacity, setNewCapacity] = useState("");
+  const [adding, setAdding] = useState(false);
+
+  const handleAdd = async () => {
+    if (!newName.trim()) {
+      toast({ title: "Enter a product name", variant: "destructive" });
+      return;
+    }
+    setAdding(true);
+    try {
+      await addProduct({
+        product_name: newName,
+        unit: newUnit,
+        price: Number(newPrice) || 0,
+        capacity: Number(newCapacity) || 0,
+      });
+      setNewName("");
+      setNewUnit("L");
+      setNewPrice("");
+      setNewCapacity("");
+      toast({ title: "Product added", description: "It is now live for the mobile app." });
+    } catch {
+      toast({ title: "Could not add product", variant: "destructive" });
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    try {
+      await deleteProduct(id);
+      toast({ title: "Product removed", description: `${name} has been deleted.` });
+    } catch {
+      toast({ title: "Delete failed", variant: "destructive" });
+    }
+  };
 
   const handleAvailabilityChange = async (id: string, is_available: boolean) => {
     try {
@@ -68,12 +109,40 @@ export function FuelManagement() {
         </Button>
       </CardHeader>
       <CardContent className="space-y-6">
+        <div className="p-4 border border-dashed border-border rounded-lg space-y-3">
+          <h3 className="font-semibold">Add New Petroleum Product</h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <Input
+              placeholder="Product name (e.g. AGO, LPG)"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+            />
+            <Input placeholder="Unit (L, KG)" value={newUnit} onChange={(e) => setNewUnit(e.target.value)} />
+            <Input
+              type="number"
+              placeholder="Price (₦)"
+              value={newPrice}
+              onChange={(e) => setNewPrice(e.target.value)}
+            />
+            <Input
+              type="number"
+              placeholder="Capacity"
+              value={newCapacity}
+              onChange={(e) => setNewCapacity(e.target.value)}
+            />
+          </div>
+          <Button onClick={handleAdd} disabled={adding} size="sm">
+            {adding ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Plus className="w-4 h-4 mr-1" />}
+            Add Product
+          </Button>
+        </div>
+
         {loading && (
           <p className="text-sm text-muted-foreground">Loading fuel products…</p>
         )}
         {!loading && products.length === 0 && (
           <p className="text-sm text-muted-foreground">
-            No fuel products yet for this station.
+            No fuel products yet for this station. Add your first product above.
           </p>
         )}
         {products.map((fuel) => {
@@ -104,7 +173,17 @@ export function FuelManagement() {
                       onCheckedChange={(checked) => handleAvailabilityChange(fuel.id, checked)}
                     />
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(fuel.id, fuel.product_name)}
+                    className="text-destructive hover:text-destructive"
+                    aria-label={`Delete ${fuel.product_name}`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
+
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

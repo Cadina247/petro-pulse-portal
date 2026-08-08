@@ -110,5 +110,47 @@ export function useFuelProducts() {
     }
   };
 
-  return { products, loading, saving, patchLocal, updateProduct, saveAll, reload: load };
+  // Add a brand new product for this station.
+  const addProduct = async (input: {
+    product_name: string;
+    price?: number;
+    quantity_available?: number;
+    capacity?: number;
+    unit?: string;
+  }) => {
+    if (!user) throw new Error("Not signed in");
+    const { error } = await db.from("fuel_products").insert({
+      station_id: user.id,
+      product_name: input.product_name.trim(),
+      price: input.price ?? 0,
+      quantity_available: input.quantity_available ?? 0,
+      capacity: input.capacity ?? 0,
+      unit: input.unit?.trim() || "L",
+      sort_order: products.length + 1,
+    });
+    if (error) throw error;
+    await load();
+  };
+
+  const deleteProduct = async (id: string) => {
+    const prev = products;
+    setProducts((p) => p.filter((x) => x.id !== id));
+    const { error } = await db.from("fuel_products").delete().eq("id", id);
+    if (error) {
+      setProducts(prev);
+      throw error;
+    }
+  };
+
+  return {
+    products,
+    loading,
+    saving,
+    patchLocal,
+    updateProduct,
+    addProduct,
+    deleteProduct,
+    saveAll,
+    reload: load,
+  };
 }
