@@ -12,6 +12,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useAccount } from "@/hooks/useAccount";
 import { toast } from "@/hooks/use-toast";
+import {
+  VerificationFields,
+  emptyVerification,
+  type VerificationInput,
+} from "@/components/verification/VerificationFields";
+import { uploadVerificationDocs } from "@/lib/verification";
 
 type AccountType = "station" | "vendor";
 
@@ -21,6 +27,7 @@ export default function CompleteRegistration() {
   const { record, loading, reload } = useAccount();
   const [busy, setBusy] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [verif, setVerif] = useState<VerificationInput>(emptyVerification);
   const [accountType, setAccountType] = useState<AccountType>("station");
   const [form, setForm] = useState({
     station_name: "",
