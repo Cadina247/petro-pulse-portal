@@ -11,6 +11,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { MapPin, CheckCircle2, Building2, Store } from "lucide-react";
 import { CadinatechMark } from "@/components/branding/CadinatechLogo";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
+import {
+  VerificationFields,
+  emptyVerification,
+  type VerificationInput,
+} from "@/components/verification/VerificationFields";
+import { uploadVerificationDocs } from "@/lib/verification";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -43,6 +49,7 @@ export default function Auth() {
   });
   const [locating, setLocating] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [verif, setVerif] = useState<VerificationInput>(emptyVerification);
 
   useEffect(() => {
     if (user) navigate("/", { replace: true });
