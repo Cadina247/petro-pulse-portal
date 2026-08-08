@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Gauge, MapPin } from "lucide-react";
@@ -148,7 +149,7 @@ export default function Auth() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="li-password">Password</Label>
-                    <Input id="li-password" type="password" required value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
+                    <PasswordInput id="li-password" required value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
                   </div>
                   <Button type="submit" disabled={busy} className="w-full">
                     {busy ? "Signing in…" : "Sign in"}
@@ -174,7 +175,7 @@ export default function Auth() {
                     </div>
                     <div className="space-y-2">
                       <Label>Password *</Label>
-                      <Input type="password" required minLength={6} value={su.password} onChange={(e) => setSu({ ...su, password: e.target.value })} />
+                      <PasswordInput required minLength={6} value={su.password} onChange={(e) => setSu({ ...su, password: e.target.value })} />
                     </div>
                   </div>
                   <div className="space-y-2">
