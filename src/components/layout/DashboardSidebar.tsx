@@ -48,9 +48,13 @@ const menuItems = [
 
 export function DashboardSidebar() {
   const { state } = useSidebar();
+  const isAdmin = useIsAdmin();
   const location = useLocation();
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
+  const items = isAdmin
+    ? [...menuItems, { title: "Verification Review", url: "/admin", icon: ShieldCheck }]
+    : menuItems;
 
   const isActive = (path: string) => currentPath === path;
   const getNavClass = (path: string) =>
