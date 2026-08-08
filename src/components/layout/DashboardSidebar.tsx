@@ -84,7 +84,7 @@ export function DashboardSidebar() {
           <SidebarGroupLabel>Main Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="h-11">
                     <NavLink to={item.url} className={getNavClass(item.url)}>
