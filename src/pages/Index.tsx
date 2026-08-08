@@ -1,10 +1,10 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
+import { IncomingOrders } from "@/components/dashboard/IncomingOrders";
 import { RecentOrders } from "@/components/dashboard/RecentOrders";
 import { FuelStockWidget } from "@/components/dashboard/FuelStockWidget";
 import { EVChargingStatus } from "@/components/dashboard/EVChargingStatus";
 import { FuelManagement } from "@/components/dashboard/FuelManagement";
-import { PricingManagement } from "@/components/dashboard/PricingManagement";
 import { OtherActivitiesManagement } from "@/components/dashboard/OtherActivitiesManagement";
 import { RedeemToken } from "@/components/dashboard/RedeemToken";
 import { StationProfile } from "@/components/dashboard/StationProfile";
@@ -50,13 +50,14 @@ const Index = () => {
           <>
             <DashboardStats />
 
+            <IncomingOrders />
+
             <StationProfile />
 
             <FuelManagement />
 
-            <PricingManagement />
-
             <OtherActivitiesManagement />
+
 
             <RedeemToken />
 
