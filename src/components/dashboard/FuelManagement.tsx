@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Droplets, Fuel, Flame, AlertTriangle, Loader2 } from "lucide-react";
+import { Droplets, Fuel, Flame, AlertTriangle, Loader2, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useFuelProducts } from "@/hooks/useFuelProducts";
 
@@ -16,8 +17,48 @@ const iconFor = (name: string) => {
 };
 
 export function FuelManagement() {
-  const { products, loading, saving, patchLocal, updateProduct, saveAll } = useFuelProducts();
+  const { products, loading, saving, patchLocal, updateProduct, addProduct, deleteProduct, saveAll } =
+    useFuelProducts();
   const { toast } = useToast();
+  const [newName, setNewName] = useState("");
+  const [newUnit, setNewUnit] = useState("L");
+  const [newPrice, setNewPrice] = useState("");
+  const [newCapacity, setNewCapacity] = useState("");
+  const [adding, setAdding] = useState(false);
+
+  const handleAdd = async () => {
+    if (!newName.trim()) {
+      toast({ title: "Enter a product name", variant: "destructive" });
+      return;
+    }
+    setAdding(true);
+    try {
+      await addProduct({
+        product_name: newName,
+        unit: newUnit,
+        price: Number(newPrice) || 0,
+        capacity: Number(newCapacity) || 0,
+      });
+      setNewName("");
+      setNewUnit("L");
+      setNewPrice("");
+      setNewCapacity("");
+      toast({ title: "Product added", description: "It is now live for the mobile app." });
+    } catch {
+      toast({ title: "Could not add product", variant: "destructive" });
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    try {
+      await deleteProduct(id);
+      toast({ title: "Product removed", description: `${name} has been deleted.` });
+    } catch {
+      toast({ title: "Delete failed", variant: "destructive" });
+    }
+  };
 
   const handleAvailabilityChange = async (id: string, is_available: boolean) => {
     try {
