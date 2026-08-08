@@ -11,6 +11,8 @@ import ResetPassword from "./pages/ResetPassword";
 import DeliveryPersonnel from "./pages/DeliveryPersonnel";
 import Settings from "./pages/Settings";
 import CompleteRegistration from "./pages/CompleteRegistration";
+import VerificationStatus from "./pages/VerificationStatus";
+import Admin from "./pages/Admin";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -54,8 +56,24 @@ const App = () => (
             <Route
               path="/settings"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireVerified={false}>
                   <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/verification"
+              element={
+                <ProtectedRoute requireVerified={false}>
+                  <VerificationStatus />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireVerified={false}>
+                  <Admin />
                 </ProtectedRoute>
               }
             />
