@@ -13,8 +13,9 @@ import {
   Settings,
   HelpCircle,
   ChevronRight,
-  Gauge
 } from "lucide-react";
+import { CadinatechMark } from "@/components/branding/CadinatechLogo";
+
 
 import {
   Sidebar,
@@ -60,17 +61,18 @@ export function DashboardSidebar() {
       <SidebarContent>
         <div className="p-4 border-b">
           <div className="flex items-center gap-3">
-            <div className="flex-shrink-0 w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Gauge className="w-5 h-5 text-primary-foreground" />
-            </div>
+            <CadinatechMark size={32} className="rounded-full shadow-sm" idPrefix="sidebar" />
             {!collapsed && (
-              <div>
-                <h2 className="font-bold text-lg text-foreground">FuelStation</h2>
-                <p className="text-xs text-muted-foreground">Admin Portal</p>
+              <div className="leading-tight">
+                <h2 className="font-serif uppercase tracking-[0.2em] text-sm text-[#C79A29] dark:text-[#E9C75C]">
+                  Cadinatech
+                </h2>
+                <p className="text-xs text-muted-foreground">Station Portal</p>
               </div>
             )}
           </div>
         </div>
+
 
         <SidebarGroup>
           <SidebarGroupLabel>Main Navigation</SidebarGroupLabel>
