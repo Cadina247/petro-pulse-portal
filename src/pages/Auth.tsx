@@ -11,6 +11,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { MapPin, CheckCircle2, Building2, Store } from "lucide-react";
 import { CadinatechMark } from "@/components/branding/CadinatechLogo";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
+import {
+  VerificationFields,
+  emptyVerification,
+  type VerificationInput,
+} from "@/components/verification/VerificationFields";
+import { uploadVerificationDocs } from "@/lib/verification";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -43,6 +49,7 @@ export default function Auth() {
   });
   const [locating, setLocating] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [verif, setVerif] = useState<VerificationInput>(emptyVerification);
 
   useEffect(() => {
     if (user) navigate("/", { replace: true });
@@ -106,6 +113,14 @@ export default function Auth() {
       });
       return;
     }
+    if (!verif.nin || !verif.businessDoc) {
+      toast({
+        title: "Verification required",
+        description: "Enter your NIN and upload a business document.",
+        variant: "destructive",
+      });
+      return;
+    }
     setBusy(true);
 
     const products = su.products_sold
@@ -158,10 +173,34 @@ export default function Auth() {
       }
     }
 
+    let docsPending = false;
+    if (userId) {
+      try {
+        const docs = await uploadVerificationDocs(userId, verif);
+        const table = accountType === "vendor" ? "vendors" : "stations";
+        const column = accountType === "vendor" ? "user_id" : "id";
+        const { error: vErr } = await (supabase as any)
+          .from(table)
+          .update({
+            nin: verif.nin,
+            business_document_url: docs.business_document_url,
+            supporting_document_url: docs.supporting_document_url,
+            supporting_document_note: verif.supportingNote || null,
+            verification_status: "pending",
+          })
+          .eq(column, userId);
+        if (vErr) docsPending = true;
+      } catch {
+        docsPending = true;
+      }
+    }
+
     setBusy(false);
     toast({
-      title: "Account created",
-      description: "Check your email to confirm, then sign in.",
+      title: "Account created — pending verification",
+      description: docsPending
+        ? "Confirm your email, sign in, then upload your documents on the verification screen."
+        : "Confirm your email and sign in. An admin will review your documents shortly.",
     });
   };
 
@@ -359,6 +398,8 @@ export default function Auth() {
                       <Input type="file" accept="image/*" onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)} />
                     </div>
                   )}
+
+                  <VerificationFields value={verif} onChange={setVerif} />
 
                   <Button type="submit" disabled={busy} className="w-full">
                     {busy ? "Creating…" : "Create account"}

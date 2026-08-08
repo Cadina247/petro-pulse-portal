@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useAccount } from "@/hooks/useAccount";
+import { useIsAdmin } from "@/lib/admin";
 import { CadinatechMark } from "@/components/branding/CadinatechLogo";
 
 function Splash({ label }: { label: string }) {
@@ -15,25 +16,39 @@ function Splash({ label }: { label: string }) {
   );
 }
 
-/** Redirects signed-in users without a station/vendor row to onboarding. */
-function OnboardingGate({ children }: { children: React.ReactNode }) {
+/** Redirects signed-in users without a station/vendor row to onboarding,
+ *  and unverified accounts to the pending-verification screen. */
+function AccountGate({
+  children,
+  requireVerified,
+}: {
+  children: React.ReactNode;
+  requireVerified: boolean;
+}) {
   const { record, loading } = useAccount();
+  const isAdmin = useIsAdmin();
+  if (isAdmin) return <>{children}</>;
   if (loading) return <Splash label="Loading…" />;
   if (!record) return <Navigate to="/complete-registration" replace />;
+  if (requireVerified && record.verification_status !== "verified") {
+    return <Navigate to="/verification" replace />;
+  }
   return <>{children}</>;
 }
 
 export function ProtectedRoute({
   children,
   requireOnboarding = true,
+  requireVerified = true,
 }: {
   children: React.ReactNode;
   requireOnboarding?: boolean;
+  requireVerified?: boolean;
 }) {
   const { user, loading } = useAuth();
 
   if (loading) return <Splash label="Loading…" />;
   if (!user) return <Navigate to="/auth" replace />;
   if (!requireOnboarding) return <>{children}</>;
-  return <OnboardingGate>{children}</OnboardingGate>;
+  return <AccountGate requireVerified={requireVerified}>{children}</AccountGate>;
 }

@@ -13,7 +13,9 @@ import {
   Settings,
   HelpCircle,
   ChevronRight,
+  ShieldCheck,
 } from "lucide-react";
+import { useIsAdmin } from "@/lib/admin";
 import { CadinatechMark } from "@/components/branding/CadinatechLogo";
 
 
@@ -46,9 +48,13 @@ const menuItems = [
 
 export function DashboardSidebar() {
   const { state } = useSidebar();
+  const isAdmin = useIsAdmin();
   const location = useLocation();
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
+  const items = isAdmin
+    ? [...menuItems, { title: "Verification Review", url: "/admin", icon: ShieldCheck }]
+    : menuItems;
 
   const isActive = (path: string) => currentPath === path;
   const getNavClass = (path: string) =>
@@ -78,7 +84,7 @@ export function DashboardSidebar() {
           <SidebarGroupLabel>Main Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="h-11">
                     <NavLink to={item.url} className={getNavClass(item.url)}>
