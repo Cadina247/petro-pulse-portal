@@ -4,10 +4,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Droplets, Fuel, Flame, AlertTriangle, Loader2, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useFuelProducts } from "@/hooks/useFuelProducts";
+
+const DEFAULT_PRODUCTS = [
+  { name: "Petrol", unit: "L" },
+  { name: "Diesel", unit: "L" },
+  { name: "Cooking Gas", unit: "KG" },
+  { name: "Kerosene", unit: "L" },
+];
 
 const iconFor = (name: string) => {
   const n = name.toLowerCase();
@@ -23,12 +37,15 @@ export function FuelManagement() {
   const [newName, setNewName] = useState("");
   const [newUnit, setNewUnit] = useState("L");
   const [newPrice, setNewPrice] = useState("");
+  const [newQuantity, setNewQuantity] = useState("");
   const [newCapacity, setNewCapacity] = useState("");
   const [adding, setAdding] = useState(false);
 
+  const existing = products.map((p) => p.product_name.toLowerCase());
+
   const handleAdd = async () => {
     if (!newName.trim()) {
-      toast({ title: "Enter a product name", variant: "destructive" });
+      toast({ title: "Enter or pick a product name", variant: "destructive" });
       return;
     }
     setAdding(true);
@@ -37,13 +54,15 @@ export function FuelManagement() {
         product_name: newName,
         unit: newUnit,
         price: Number(newPrice) || 0,
+        quantity_available: Number(newQuantity) || 0,
         capacity: Number(newCapacity) || 0,
       });
       setNewName("");
       setNewUnit("L");
       setNewPrice("");
+      setNewQuantity("");
       setNewCapacity("");
-      toast({ title: "Product added", description: "It is now live for the mobile app." });
+      toast({ title: "Product added", description: "Price and availability are now live for the mobile app." });
     } catch {
       toast({ title: "Could not add product", variant: "destructive" });
     } finally {
@@ -64,7 +83,7 @@ export function FuelManagement() {
     try {
       await updateProduct(id, { is_available });
       toast({
-        title: is_available ? "Marked available" : "Marked unavailable",
+        title: is_available ? "In stock" : "Out of stock",
         description: "Live availability updated for the mobile app.",
       });
     } catch {
@@ -76,8 +95,8 @@ export function FuelManagement() {
     try {
       await saveAll();
       toast({
-        title: "Changes Saved",
-        description: "Fuel availability and stock levels have been updated successfully.",
+        title: "Changes saved",
+        description: "Prices, units and stock levels have been updated.",
       });
     } catch {
       toast({ title: "Save failed", description: "Please try again.", variant: "destructive" });
@@ -101,7 +120,7 @@ export function FuelManagement() {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <Fuel className="w-5 h-5 text-primary" />
-          Fuel Management
+          Fuel &amp; Price Management
         </CardTitle>
         <Button onClick={handleSaveChanges} disabled={saving || loading} className="bg-success hover:bg-success/90">
           {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
@@ -110,19 +129,51 @@ export function FuelManagement() {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="p-4 border border-dashed border-border rounded-lg space-y-3">
-          <h3 className="font-semibold">Add New Petroleum Product</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <h3 className="font-semibold">Add Product</h3>
+          <div className="flex flex-wrap gap-2">
+            {DEFAULT_PRODUCTS.map((p) => (
+              <Button
+                key={p.name}
+                type="button"
+                size="sm"
+                variant={newName === p.name ? "default" : "outline"}
+                disabled={existing.includes(p.name.toLowerCase())}
+                onClick={() => {
+                  setNewName(p.name);
+                  setNewUnit(p.unit);
+                }}
+              >
+                {p.name}
+              </Button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
             <Input
-              placeholder="Product name (e.g. AGO, LPG)"
+              placeholder="Product name"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
             />
-            <Input placeholder="Unit (L, KG)" value={newUnit} onChange={(e) => setNewUnit(e.target.value)} />
+            <Select value={newUnit} onValueChange={setNewUnit}>
+              <SelectTrigger aria-label="Unit">
+                <SelectValue placeholder="Unit" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="L">Litre (L)</SelectItem>
+                <SelectItem value="KG">Kilogram (KG)</SelectItem>
+              </SelectContent>
+            </Select>
             <Input
               type="number"
-              placeholder="Price (₦)"
+              placeholder={`Price (₦ per ${newUnit})`}
               value={newPrice}
               onChange={(e) => setNewPrice(e.target.value)}
+            />
+            <Input
+              type="number"
+              placeholder="Quantity in stock"
+              value={newQuantity}
+              onChange={(e) => setNewQuantity(e.target.value)}
             />
             <Input
               type="number"
@@ -137,27 +188,27 @@ export function FuelManagement() {
           </Button>
         </div>
 
-        {loading && (
-          <p className="text-sm text-muted-foreground">Loading fuel products…</p>
-        )}
+        {loading && <p className="text-sm text-muted-foreground">Loading products…</p>}
         {!loading && products.length === 0 && (
           <p className="text-sm text-muted-foreground">
-            No fuel products yet for this station. Add your first product above.
+            No products yet for this station. Pick one of the four major products above to get started.
           </p>
         )}
+
         {products.map((fuel) => {
           const Icon = iconFor(fuel.product_name);
           const stockStatus = getStockStatus(fuel.quantity_available, fuel.capacity);
 
           return (
             <div key={fuel.id} className="p-4 border border-border rounded-lg space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <Icon className="w-6 h-6 text-primary" />
                   <div>
                     <h3 className="font-semibold">{fuel.product_name}</h3>
                     <p className="text-sm text-muted-foreground">
-                      ₦{Number(fuel.price).toLocaleString()}/{fuel.unit}
+                      ₦{Number(fuel.price).toLocaleString()} per {fuel.unit} •{" "}
+                      {fuel.is_available ? "Available in stock" : "Out of stock"}
                     </p>
                   </div>
                 </div>
@@ -165,7 +216,7 @@ export function FuelManagement() {
                   <Badge variant={stockStatus.variant}>{stockStatus.label}</Badge>
                   <div className="flex items-center gap-2">
                     <Label htmlFor={`${fuel.id}-availability`} className="text-sm">
-                      Available
+                      In stock
                     </Label>
                     <Switch
                       id={`${fuel.id}-availability`}
@@ -183,26 +234,45 @@ export function FuelManagement() {
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
-
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`${fuel.id}-price`}>Price (₦ per {fuel.unit})</Label>
+                  <Input
+                    id={`${fuel.id}-price`}
+                    type="number"
+                    value={fuel.price}
+                    onChange={(e) => patchLocal(fuel.id, { price: Number(e.target.value) })}
+                    className="font-semibold"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`${fuel.id}-unit`}>Sold in</Label>
+                  <Select
+                    value={fuel.unit}
+                    onValueChange={(unit) => patchLocal(fuel.id, { unit })}
+                  >
+                    <SelectTrigger id={`${fuel.id}-unit`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="L">Litre (L)</SelectItem>
+                      <SelectItem value="KG">Kilogram (KG)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor={`${fuel.id}-stock`}>Current Stock ({fuel.unit})</Label>
                   <Input
                     id={`${fuel.id}-stock`}
                     type="number"
                     value={fuel.quantity_available}
-                    onChange={(e) =>
-                      patchLocal(fuel.id, { quantity_available: Number(e.target.value) })
-                    }
+                    onChange={(e) => patchLocal(fuel.id, { quantity_available: Number(e.target.value) })}
                     disabled={!fuel.is_available}
                   />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Capacity ({fuel.unit})</Label>
-                  <Input value={fuel.capacity} disabled className="bg-muted" />
                 </div>
 
                 <div className="space-y-2">
@@ -226,10 +296,7 @@ export function FuelManagement() {
                       />
                     </div>
                     <span className="text-sm font-medium min-w-[3rem]">
-                      {Math.round(
-                        fuel.capacity > 0 ? (fuel.quantity_available / fuel.capacity) * 100 : 0,
-                      )}
-                      %
+                      {Math.round(fuel.capacity > 0 ? (fuel.quantity_available / fuel.capacity) * 100 : 0)}%
                     </span>
                   </div>
                 </div>
@@ -239,7 +306,7 @@ export function FuelManagement() {
                 <div className="flex items-center gap-2 p-3 bg-warning/10 border border-warning/20 rounded-md">
                   <AlertTriangle className="w-4 h-4 text-warning" />
                   <span className="text-sm text-warning">
-                    This fuel type is currently marked as unavailable
+                    This product is currently marked as out of stock
                   </span>
                 </div>
               )}
