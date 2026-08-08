@@ -109,12 +109,40 @@ export function FuelManagement() {
         </Button>
       </CardHeader>
       <CardContent className="space-y-6">
+        <div className="p-4 border border-dashed border-border rounded-lg space-y-3">
+          <h3 className="font-semibold">Add New Petroleum Product</h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <Input
+              placeholder="Product name (e.g. AGO, LPG)"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+            />
+            <Input placeholder="Unit (L, KG)" value={newUnit} onChange={(e) => setNewUnit(e.target.value)} />
+            <Input
+              type="number"
+              placeholder="Price (₦)"
+              value={newPrice}
+              onChange={(e) => setNewPrice(e.target.value)}
+            />
+            <Input
+              type="number"
+              placeholder="Capacity"
+              value={newCapacity}
+              onChange={(e) => setNewCapacity(e.target.value)}
+            />
+          </div>
+          <Button onClick={handleAdd} disabled={adding} size="sm">
+            {adding ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Plus className="w-4 h-4 mr-1" />}
+            Add Product
+          </Button>
+        </div>
+
         {loading && (
           <p className="text-sm text-muted-foreground">Loading fuel products…</p>
         )}
         {!loading && products.length === 0 && (
           <p className="text-sm text-muted-foreground">
-            No fuel products yet for this station.
+            No fuel products yet for this station. Add your first product above.
           </p>
         )}
         {products.map((fuel) => {
