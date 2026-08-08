@@ -120,15 +120,16 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-lg">
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-            <Gauge className="w-6 h-6 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="font-bold text-xl">FuelStation Portal</h1>
-            <p className="text-xs text-muted-foreground">Station management access</p>
+        <div className="flex flex-col items-center justify-center gap-3 mb-6">
+          <CadinatechMark size={84} className="rounded-full shadow-lg" idPrefix="auth" />
+          <div className="text-center">
+            <h1 className="font-serif uppercase tracking-[0.28em] text-lg text-[#C79A29] dark:text-[#E9C75C]">
+              Cadinatech
+            </h1>
+            <p className="text-xs text-muted-foreground mt-1">Station management access</p>
           </div>
         </div>
+
 
         <Card>
           <CardHeader>
