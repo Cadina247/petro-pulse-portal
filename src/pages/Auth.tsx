@@ -173,10 +173,34 @@ export default function Auth() {
       }
     }
 
+    let docsPending = false;
+    if (userId) {
+      try {
+        const docs = await uploadVerificationDocs(userId, verif);
+        const table = accountType === "vendor" ? "vendors" : "stations";
+        const column = accountType === "vendor" ? "user_id" : "id";
+        const { error: vErr } = await (supabase as any)
+          .from(table)
+          .update({
+            nin: verif.nin,
+            business_document_url: docs.business_document_url,
+            supporting_document_url: docs.supporting_document_url,
+            supporting_document_note: verif.supportingNote || null,
+            verification_status: "pending",
+          })
+          .eq(column, userId);
+        if (vErr) docsPending = true;
+      } catch {
+        docsPending = true;
+      }
+    }
+
     setBusy(false);
     toast({
-      title: "Account created",
-      description: "Check your email to confirm, then sign in.",
+      title: "Account created — pending verification",
+      description: docsPending
+        ? "Confirm your email, sign in, then upload your documents on the verification screen."
+        : "Confirm your email and sign in. An admin will review your documents shortly.",
     });
   };
 
