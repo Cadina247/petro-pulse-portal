@@ -145,7 +145,17 @@ export function FuelManagement() {
                       onCheckedChange={(checked) => handleAvailabilityChange(fuel.id, checked)}
                     />
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(fuel.id, fuel.product_name)}
+                    className="text-destructive hover:text-destructive"
+                    aria-label={`Delete ${fuel.product_name}`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
+
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
