@@ -44,15 +44,354 @@ export type Database = {
         }
         Relationships: []
       }
+      fuel_products: {
+        Row: {
+          capacity: number
+          created_at: string
+          currency: string
+          id: string
+          is_available: boolean
+          last_updated_at: string
+          price: number
+          product_name: string
+          quantity_available: number
+          sort_order: number
+          station_id: string
+          unit: string
+        }
+        Insert: {
+          capacity?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          is_available?: boolean
+          last_updated_at?: string
+          price?: number
+          product_name: string
+          quantity_available?: number
+          sort_order?: number
+          station_id: string
+          unit?: string
+        }
+        Update: {
+          capacity?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          is_available?: boolean
+          last_updated_at?: string
+          price?: number
+          product_name?: string
+          quantity_available?: number
+          sort_order?: number
+          station_id?: string
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fuel_products_station_id_fkey"
+            columns: ["station_id"]
+            isOneToOne: false
+            referencedRelation: "stations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          assigned_personnel_id: string | null
+          created_at: string
+          customer_id: string | null
+          customer_name: string
+          customer_phone: string | null
+          delivery_address: string | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          notes: string | null
+          product_name: string
+          quantity: number
+          station_id: string
+          status: string
+          total_amount: number
+          unit: string
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          assigned_personnel_id?: string | null
+          created_at?: string
+          customer_id?: string | null
+          customer_name: string
+          customer_phone?: string | null
+          delivery_address?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          notes?: string | null
+          product_name: string
+          quantity?: number
+          station_id: string
+          status?: string
+          total_amount?: number
+          unit?: string
+          unit_price?: number
+          updated_at?: string
+        }
+        Update: {
+          assigned_personnel_id?: string | null
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string
+          customer_phone?: string | null
+          delivery_address?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          notes?: string | null
+          product_name?: string
+          quantity?: number
+          station_id?: string
+          status?: string
+          total_amount?: number
+          unit?: string
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_station_id_fkey"
+            columns: ["station_id"]
+            isOneToOne: false
+            referencedRelation: "stations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stations: {
+        Row: {
+          address: string | null
+          business_document_url: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_available: boolean
+          latitude: number | null
+          logo_url: string | null
+          longitude: number | null
+          nin: string | null
+          owner_name: string | null
+          phone: string | null
+          station_name: string
+          supporting_document_note: string | null
+          supporting_document_url: string | null
+          updated_at: string
+          verification_notes: string | null
+          verification_status: string
+          verified_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          business_document_url?: string | null
+          created_at?: string
+          email?: string | null
+          id: string
+          is_available?: boolean
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          nin?: string | null
+          owner_name?: string | null
+          phone?: string | null
+          station_name: string
+          supporting_document_note?: string | null
+          supporting_document_url?: string | null
+          updated_at?: string
+          verification_notes?: string | null
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          business_document_url?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_available?: boolean
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          nin?: string | null
+          owner_name?: string | null
+          phone?: string | null
+          station_name?: string
+          supporting_document_note?: string | null
+          supporting_document_url?: string | null
+          updated_at?: string
+          verification_notes?: string | null
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
+      tokens: {
+        Row: {
+          code: string
+          created_at: string
+          currency: string
+          id: string
+          redeemed_at: string | null
+          station_id: string | null
+          status: Database["public"]["Enums"]["token_status"]
+          updated_at: string
+          value_cents: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency?: string
+          id?: string
+          redeemed_at?: string | null
+          station_id?: string | null
+          status?: Database["public"]["Enums"]["token_status"]
+          updated_at?: string
+          value_cents: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          redeemed_at?: string | null
+          station_id?: string | null
+          status?: Database["public"]["Enums"]["token_status"]
+          updated_at?: string
+          value_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tokens_station_id_fkey"
+            columns: ["station_id"]
+            isOneToOne: false
+            referencedRelation: "stations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendors: {
+        Row: {
+          address: string | null
+          business_document_url: string | null
+          business_name: string
+          created_at: string
+          delivery_available: boolean
+          email: string | null
+          estimated_quantity: string | null
+          id: string
+          is_available: boolean
+          latitude: number | null
+          longitude: number | null
+          nin: string | null
+          owner_name: string | null
+          phone: string | null
+          products_sold: string[]
+          supporting_document_note: string | null
+          supporting_document_url: string | null
+          updated_at: string
+          user_id: string
+          verification_notes: string | null
+          verification_status: string
+          verified_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          business_document_url?: string | null
+          business_name: string
+          created_at?: string
+          delivery_available?: boolean
+          email?: string | null
+          estimated_quantity?: string | null
+          id?: string
+          is_available?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          nin?: string | null
+          owner_name?: string | null
+          phone?: string | null
+          products_sold?: string[]
+          supporting_document_note?: string | null
+          supporting_document_url?: string | null
+          updated_at?: string
+          user_id: string
+          verification_notes?: string | null
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          business_document_url?: string | null
+          business_name?: string
+          created_at?: string
+          delivery_available?: boolean
+          email?: string | null
+          estimated_quantity?: string | null
+          id?: string
+          is_available?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          nin?: string | null
+          owner_name?: string | null
+          phone?: string | null
+          products_sold?: string[]
+          supporting_document_note?: string | null
+          supporting_document_url?: string | null
+          updated_at?: string
+          user_id?: string
+          verification_notes?: string | null
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: never; Returns: boolean }
+      list_public_stations: {
+        Args: never
+        Returns: {
+          address: string
+          created_at: string
+          id: string
+          is_available: boolean
+          latitude: number
+          logo_url: string
+          longitude: number
+          station_name: string
+          updated_at: string
+        }[]
+      }
+      list_public_vendors: {
+        Args: never
+        Returns: {
+          address: string
+          business_name: string
+          created_at: string
+          delivery_available: boolean
+          estimated_quantity: string
+          id: string
+          is_available: boolean
+          latitude: number
+          longitude: number
+          products_sold: string[]
+        }[]
+      }
+      seed_fuel_products: { Args: { _station_id: string }; Returns: undefined }
     }
     Enums: {
-      [_ in never]: never
+      token_status: "issued" | "redeemed" | "void"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -179,6 +518,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      token_status: ["issued", "redeemed", "void"],
+    },
   },
 } as const
