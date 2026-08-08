@@ -10,6 +10,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import DeliveryPersonnel from "./pages/DeliveryPersonnel";
 import Settings from "./pages/Settings";
+import CompleteRegistration from "./pages/CompleteRegistration";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -26,6 +27,14 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route
+              path="/complete-registration"
+              element={
+                <ProtectedRoute requireOnboarding={false}>
+                  <CompleteRegistration />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/"
               element={
