@@ -13,7 +13,9 @@ import {
   Settings,
   HelpCircle,
   ChevronRight,
+  ShieldCheck,
 } from "lucide-react";
+import { useIsAdmin } from "@/lib/admin";
 import { CadinatechMark } from "@/components/branding/CadinatechLogo";
 
 

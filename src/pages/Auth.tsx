@@ -399,6 +399,8 @@ export default function Auth() {
                     </div>
                   )}
 
+                  <VerificationFields value={verif} onChange={setVerif} />
+
                   <Button type="submit" disabled={busy} className="w-full">
                     {busy ? "Creating…" : "Create account"}
                   </Button>
