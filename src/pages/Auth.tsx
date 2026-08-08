@@ -113,6 +113,14 @@ export default function Auth() {
       });
       return;
     }
+    if (!verif.nin || !verif.businessDoc) {
+      toast({
+        title: "Verification required",
+        description: "Enter your NIN and upload a business document.",
+        variant: "destructive",
+      });
+      return;
+    }
     setBusy(true);
 
     const products = su.products_sold
