@@ -104,7 +104,32 @@ export default function CompleteRegistration() {
       });
       return;
     }
+    if (!verif.nin || !verif.businessDoc) {
+      toast({
+        title: "Verification required",
+        description: "Enter your NIN and upload a business document.",
+        variant: "destructive",
+      });
+      return;
+    }
     setBusy(true);
+
+    let docs: { business_document_url: string | null; supporting_document_url: string | null };
+    try {
+      docs = await uploadVerificationDocs(user.id, verif);
+    } catch (e: any) {
+      setBusy(false);
+      toast({ title: "Upload failed", description: e.message, variant: "destructive" });
+      return;
+    }
+
+    const verification = {
+      nin: verif.nin,
+      business_document_url: docs.business_document_url,
+      supporting_document_url: docs.supporting_document_url,
+      supporting_document_note: verif.supportingNote || null,
+      verification_status: "pending",
+    };
 
     let error: any = null;
     if (isVendor) {
@@ -124,6 +149,7 @@ export default function CompleteRegistration() {
         products_sold: products,
         estimated_quantity: form.estimated_quantity || null,
         delivery_available: form.delivery_available,
+        ...verification,
       });
       error = res.error;
     } else {
@@ -136,6 +162,7 @@ export default function CompleteRegistration() {
         address: form.address || null,
         latitude: Number(form.latitude),
         longitude: Number(form.longitude),
+        ...verification,
       });
       error = res.error;
     }
@@ -146,8 +173,11 @@ export default function CompleteRegistration() {
       return;
     }
     await reload();
-    toast({ title: "Registration complete", description: "Welcome to Cadinatech." });
-    navigate("/", { replace: true });
+    toast({
+      title: "Submitted for verification",
+      description: "An admin will review your documents shortly.",
+    });
+    navigate("/verification", { replace: true });
   };
 
   return (
