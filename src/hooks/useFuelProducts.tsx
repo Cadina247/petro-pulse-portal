@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -40,26 +40,40 @@ export function useFuelProducts() {
     load();
   }, [load]);
 
+  // Keep a stable ref to the latest loader so the realtime effect
+  // never re-runs just because `load` was re-created.
+  const loadRef = useRef(load);
+  useEffect(() => {
+    loadRef.current = load;
+  }, [load]);
+
+  // Unique per hook instance so multiple components don't collide on one channel.
+  const instanceId = useId();
+
   // Live updates from the same table the mobile app reads.
   useEffect(() => {
     if (!user) return;
-    const channel = supabase
-      .channel("fuel_products_dashboard")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "fuel_products",
-          filter: `station_id=eq.${user.id}`,
-        },
-        () => load(),
-      )
-      .subscribe();
+
+    // Fresh channel every run: create -> attach listeners -> subscribe.
+    const channel = supabase.channel(`fuel_products:${user.id}:${instanceId}`);
+
+    channel.on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "fuel_products",
+        filter: `station_id=eq.${user.id}`,
+      },
+      () => loadRef.current(),
+    );
+
+    channel.subscribe();
+
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, load]);
+  }, [user?.id, instanceId]);
 
   // Optimistic local edit (no network).
   const patchLocal = (id: string, patch: Partial<FuelProduct>) =>
