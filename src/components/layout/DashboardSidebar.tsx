@@ -13,8 +13,9 @@ import {
   Settings,
   HelpCircle,
   ChevronRight,
-  Gauge
 } from "lucide-react";
+import { CadinatechMark } from "@/components/branding/CadinatechLogo";
+
 
 import {
   Sidebar,
