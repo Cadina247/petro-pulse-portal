@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Gauge, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { CadinatechMark } from "@/components/branding/CadinatechLogo";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
