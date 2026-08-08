@@ -316,8 +316,10 @@ export default function CompleteRegistration() {
                 )}
               </div>
 
+              <VerificationFields value={verif} onChange={setVerif} />
+
               <Button type="submit" className="w-full" disabled={busy}>
-                {busy ? "Saving…" : "Finish registration"}
+                {busy ? "Saving…" : "Submit for verification"}
               </Button>
             </form>
           </CardContent>
