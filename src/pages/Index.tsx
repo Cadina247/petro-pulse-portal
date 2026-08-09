@@ -33,21 +33,27 @@ const Index = () => {
 
         <AvailabilityToggle />
 
+        <WalletCredit />
+
         {isVendor ? (
-          <div className="rounded-lg border p-6 space-y-3">
-            <h2 className="text-xl font-semibold">{record?.business_name ?? "Your shop"}</h2>
-            <p className="text-sm text-muted-foreground">{record?.address}</p>
-            <p className="text-sm">
-              Products: {(record?.products_sold ?? []).join(", ") || "—"}
-            </p>
-            <p className="text-sm">Estimated quantity: {record?.estimated_quantity || "—"}</p>
-            <p className="text-sm">
-              Delivery: {record?.delivery_available ? "Available" : "Not available"}
-            </p>
-            <Button asChild variant="outline">
-              <Link to="/settings">Edit my details</Link>
-            </Button>
-          </div>
+          <>
+            <div className="rounded-lg border p-6 space-y-3">
+              <h2 className="text-xl font-semibold">{record?.business_name ?? "Your shop"}</h2>
+              <p className="text-sm text-muted-foreground">{record?.address}</p>
+              <p className="text-sm">
+                Products: {(record?.products_sold ?? []).join(", ") || "—"}
+              </p>
+              <p className="text-sm">Estimated quantity: {record?.estimated_quantity || "—"}</p>
+              <p className="text-sm">
+                Delivery: {record?.delivery_available ? "Available" : "Not available"}
+              </p>
+              <Button asChild variant="outline">
+                <Link to="/settings">Edit my details</Link>
+              </Button>
+            </div>
+
+            <OtherActivitiesManagement accountType="vendor" />
+          </>
         ) : (
           <>
             <DashboardStats />
@@ -58,7 +64,8 @@ const Index = () => {
 
             <FuelManagement />
 
-            <OtherActivitiesManagement />
+            <OtherActivitiesManagement accountType="station" />
+
 
 
             <RedeemToken />
