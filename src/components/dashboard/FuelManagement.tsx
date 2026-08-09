@@ -11,10 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Droplets, Fuel, Flame, AlertTriangle, Loader2, Plus, Trash2 } from "lucide-react";
+import { Droplets, Fuel, Flame, AlertTriangle, Loader2, Plus, Trash2, Lock } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useFuelProducts } from "@/hooks/useFuelProducts";
+import { useWallet } from "@/hooks/useWallet";
+
 
 const DEFAULT_PRODUCTS = [
   { name: "Petrol", unit: "L" },
