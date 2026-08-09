@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      credit_transactions: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          description: string | null
+          id: string
+          kind: string
+          owner_id: string
+          wallet_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          owner_id: string
+          wallet_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          owner_id?: string
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       delivery_personnel: {
         Row: {
           created_at: string
@@ -167,6 +205,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      services: {
+        Row: {
+          account_type: string
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_available: boolean
+          is_free: boolean
+          name: string
+          owner_id: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          account_type?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_available?: boolean
+          is_free?: boolean
+          name: string
+          owner_id: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          account_type?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_available?: boolean
+          is_free?: boolean
+          name?: string
+          owner_id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       stations: {
         Row: {
@@ -353,11 +433,47 @@ export type Database = {
         }
         Relationships: []
       }
+      wallets: {
+        Row: {
+          account_type: string
+          balance_cents: number
+          created_at: string
+          currency: string
+          id: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          account_type?: string
+          balance_cents?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          account_type?: string
+          balance_cents?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      ensure_wallet: {
+        Args: { _owner: string; _type: string }
+        Returns: undefined
+      }
+      get_station_profile: { Args: { _station_id: string }; Returns: Json }
+      has_credit: { Args: { _owner: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       list_public_stations: {
         Args: never
@@ -387,6 +503,10 @@ export type Database = {
           longitude: number
           products_sold: string[]
         }[]
+      }
+      seed_default_services: {
+        Args: { _owner: string; _type: string }
+        Returns: undefined
       }
       seed_fuel_products: { Args: { _station_id: string }; Returns: undefined }
     }
