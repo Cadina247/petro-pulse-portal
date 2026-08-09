@@ -11,10 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Droplets, Fuel, Flame, AlertTriangle, Loader2, Plus, Trash2 } from "lucide-react";
+import { Droplets, Fuel, Flame, AlertTriangle, Loader2, Plus, Trash2, Lock } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useFuelProducts } from "@/hooks/useFuelProducts";
+import { useWallet } from "@/hooks/useWallet";
+
 
 const DEFAULT_PRODUCTS = [
   { name: "Petrol", unit: "L" },
@@ -33,7 +35,9 @@ const iconFor = (name: string) => {
 export function FuelManagement() {
   const { products, loading, saving, patchLocal, updateProduct, addProduct, deleteProduct, saveAll } =
     useFuelProducts();
+  const { hasCredit } = useWallet();
   const { toast } = useToast();
+
   const [newName, setNewName] = useState("");
   const [newUnit, setNewUnit] = useState("L");
   const [newPrice, setNewPrice] = useState("");
@@ -122,13 +126,24 @@ export function FuelManagement() {
           <Fuel className="w-5 h-5 text-primary" />
           Fuel &amp; Price Management
         </CardTitle>
-        <Button onClick={handleSaveChanges} disabled={saving || loading} className="bg-success hover:bg-success/90">
+        <Button onClick={handleSaveChanges} disabled={saving || loading || !hasCredit} className="bg-success hover:bg-success/90">
           {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
           Save Changes
         </Button>
       </CardHeader>
       <CardContent className="space-y-6">
+        {!hasCredit && (
+          <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+            <Lock className="w-4 h-4 text-destructive mt-0.5" />
+            <span className="text-sm text-destructive">
+              Fuel and gas listings are paid listings. Your wallet is out of credit, so prices and
+              stock are locked and your station is hidden from the mobile app's Nearby list. Top up
+              in Wallet &amp; Credit above to go live again.
+            </span>
+          </div>
+        )}
         <div className="p-4 border border-dashed border-border rounded-lg space-y-3">
+
           <h3 className="font-semibold">Add Product</h3>
           <div className="flex flex-wrap gap-2">
             {DEFAULT_PRODUCTS.map((p) => (
@@ -182,10 +197,11 @@ export function FuelManagement() {
               onChange={(e) => setNewCapacity(e.target.value)}
             />
           </div>
-          <Button onClick={handleAdd} disabled={adding} size="sm">
+          <Button onClick={handleAdd} disabled={adding || !hasCredit} size="sm">
             {adding ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Plus className="w-4 h-4 mr-1" />}
             Add Product
           </Button>
+
         </div>
 
         {loading && <p className="text-sm text-muted-foreground">Loading products…</p>}
