@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export interface Order {
   id: string;
+  order_number: number | null;
   station_id: string;
   customer_name: string;
   customer_phone: string | null;
@@ -16,6 +17,8 @@ export interface Order {
   delivery_address: string | null;
   notes: string | null;
   status: string;
+  payment_status: string;
+  fulfillment_type: string;
   created_at: string;
 }
 
@@ -35,7 +38,7 @@ export function useOrders() {
       .select("*")
       .eq("station_id", user.id)
       .order("created_at", { ascending: false })
-      .limit(50);
+      .limit(100);
     if (error) setMissingTable(true);
     else setOrders((data ?? []) as Order[]);
     setLoading(false);
@@ -82,16 +85,35 @@ export function useOrders() {
     };
   }, [user?.id, instanceId]);
 
-  const updateStatus = async (id: string, status: string) => {
-    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
-    const { error } = await db.from("orders").update({ status }).eq("id", id);
+  const patch = async (id: string, patchValues: Partial<Order>) => {
+    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, ...patchValues } : o)));
+    const { error } = await db.from("orders").update(patchValues).eq("id", id);
     if (error) {
       await load();
       throw error;
     }
   };
 
+  const updateStatus = (id: string, status: string) => patch(id, { status });
+  const updatePaymentStatus = (id: string, payment_status: string) => patch(id, { payment_status });
+
+  const activeOrders = orders.filter(
+    (o) => !["delivered", "completed", "cancelled", "rejected"].includes(o.status),
+  );
+  const historyOrders = orders.filter((o) =>
+    ["delivered", "completed", "cancelled", "rejected"].includes(o.status),
+  );
   const pendingCount = orders.filter((o) => o.status === "pending").length;
 
-  return { orders, loading, missingTable, pendingCount, updateStatus, reload: load };
+  return {
+    orders,
+    activeOrders,
+    historyOrders,
+    loading,
+    missingTable,
+    pendingCount,
+    updateStatus,
+    updatePaymentStatus,
+    reload: load,
+  };
 }
