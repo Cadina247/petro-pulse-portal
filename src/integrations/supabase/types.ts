@@ -82,6 +82,119 @@ export type Database = {
         }
         Relationships: []
       }
+      ev_bookings: {
+        Row: {
+          amount: number
+          booking_date: string
+          created_at: string
+          customer_id: string | null
+          customer_name: string
+          customer_phone: string | null
+          duration_minutes: number
+          id: string
+          notes: string | null
+          owner_id: string
+          payment_status: string
+          port_id: string | null
+          start_time: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          booking_date?: string
+          created_at?: string
+          customer_id?: string | null
+          customer_name: string
+          customer_phone?: string | null
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          owner_id: string
+          payment_status?: string
+          port_id?: string | null
+          start_time?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          booking_date?: string
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string
+          customer_phone?: string | null
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          owner_id?: string
+          payment_status?: string
+          port_id?: string | null
+          start_time?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ev_bookings_port_id_fkey"
+            columns: ["port_id"]
+            isOneToOne: false
+            referencedRelation: "ev_ports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ev_ports: {
+        Row: {
+          charging_type: string
+          connector_type: string
+          created_at: string
+          currency: string
+          id: string
+          is_available: boolean
+          maintenance_status: string
+          operating_hours: string | null
+          owner_id: string
+          port_code: string
+          power_kw: number
+          price_per_kwh: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          charging_type?: string
+          connector_type?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          is_available?: boolean
+          maintenance_status?: string
+          operating_hours?: string | null
+          owner_id: string
+          port_code: string
+          power_kw?: number
+          price_per_kwh?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          charging_type?: string
+          connector_type?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          is_available?: boolean
+          maintenance_status?: string
+          operating_hours?: string | null
+          owner_id?: string
+          port_code?: string
+          power_kw?: number
+          price_per_kwh?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       fuel_products: {
         Row: {
           capacity: number
@@ -135,6 +248,50 @@ export type Database = {
           },
         ]
       }
+      fuel_stock_movements: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          note: string | null
+          product_id: string | null
+          product_name: string
+          quantity: number
+          station_id: string
+          unit: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string
+          note?: string | null
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+          station_id: string
+          unit?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          note?: string | null
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          station_id?: string
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fuel_stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "fuel_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           assigned_personnel_id: string | null
@@ -143,10 +300,13 @@ export type Database = {
           customer_name: string
           customer_phone: string | null
           delivery_address: string | null
+          fulfillment_type: string
           id: string
           latitude: number | null
           longitude: number | null
           notes: string | null
+          order_number: number | null
+          payment_status: string
           product_name: string
           quantity: number
           station_id: string
@@ -163,10 +323,13 @@ export type Database = {
           customer_name: string
           customer_phone?: string | null
           delivery_address?: string | null
+          fulfillment_type?: string
           id?: string
           latitude?: number | null
           longitude?: number | null
           notes?: string | null
+          order_number?: number | null
+          payment_status?: string
           product_name: string
           quantity?: number
           station_id: string
@@ -183,10 +346,13 @@ export type Database = {
           customer_name?: string
           customer_phone?: string | null
           delivery_address?: string | null
+          fulfillment_type?: string
           id?: string
           latitude?: number | null
           longitude?: number | null
           notes?: string | null
+          order_number?: number | null
+          payment_status?: string
           product_name?: string
           quantity?: number
           station_id?: string
